@@ -4,10 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TwoSlash + Shikiji on CDN Example</title>
-    <link
-      rel="stylesheet"
-      href="https://esm.sh/shikiji-twoslash/style-rich.css"
-    />
+    <link rel="stylesheet" href="https://esm.sh/shikiji-twoslash/style-rich.css" />
     <style>
       html {
         color-scheme: dark;
@@ -28,25 +25,16 @@
   <body>
     <p>
       This is an example of running
-      <a href="https://github.com/antfu/twoslash-cdn" target="_blank">
-        TwoSlash
-      </a>
-      + <a href="https://shikiji.netlify.app/" target="_blank">Shikiji</a> on
-      CDN. This page is
-      <a
-        href="https://github.com/antfu/twoslash-cdn/blob/main/static.html"
-        target="_blank"
-      >
+      <a href="https://github.com/antfu/twoslash-cdn" target="_blank"> TwoSlash </a>
+      + <a href="https://shikiji.netlify.app/" target="_blank">Shikiji</a> on CDN. This page is
+      <a href="https://github.com/antfu/twoslash-cdn/blob/main/static.html" target="_blank">
         a single static HTML file</a
       >.
     </p>
     <div id="app">Loading...</div>
     <script type="module">
       // TODO: Replace with explicit versions in production
-      import {
-        createTransformerFactory,
-        rendererRich,
-      } from 'https://esm.sh/shikiji-twoslash@latest/core'
+      import { createTransformerFactory, rendererRich } from 'https://esm.sh/shikiji-twoslash@latest/core'
       import { codeToHtml } from 'https://esm.sh/shikiji@latest'
       import { createStorage } from 'https://esm.sh/unstorage@latest'
       import indexedDbDriver from 'https://esm.sh/unstorage@latest/drivers/indexedb'
@@ -54,7 +42,7 @@
 
       // ============= Initialization =============
 
-      // An example using unstorage with IndexedDB to cache the virtual file system
+      // An example of using unstorage with IndexedDB to cache the virtual file system
       const storage = createStorage({
         driver: indexedDbDriver({ base: 'twoslash-cdn' }),
       })
