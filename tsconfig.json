@@ -3,7 +3,7 @@
     "target": "ESNext",
     "lib": ["esnext", "DOM"],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "paths": {
       "twoslash-cdn": [
         "./src/index.ts"

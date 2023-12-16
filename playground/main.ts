@@ -1,5 +1,5 @@
 import 'shiki-twoslash/style-rich.css'
-import { rendererRich, transformerTwoSlash } from 'shikiji-twoslash'
+import { createTransformerFactory, rendererRich } from 'shikiji-twoslash/core'
 import { codeToHtml } from 'shikiji'
 import { createStorage } from 'unstorage'
 import indexedDbDriver from 'unstorage/drivers/indexedb'
@@ -9,7 +9,7 @@ const storage = createStorage({
   driver: indexedDbDriver({ base: 'twoslash-cdn:' }),
 })
 
-const twoSlash = createTwoSlashFromCDN({
+const twoslash = createTwoSlashFromCDN({
   storage,
   compilerOptions: {
     lib: ['esnext', 'dom'],
@@ -25,15 +25,14 @@ const count = ref(0)
 //     ^?
 `
 
-await twoSlash.prepareTypes(source)
+await twoslash.prepareTypes(source)
 
 const app = document.getElementById('app')!
 app.innerHTML = await codeToHtml(source, {
   lang: 'ts',
   theme: 'vitesse-dark',
   transformers: [
-    transformerTwoSlash({
-      twoslashOptions: twoSlash.twoSlashOptionsOverrides,
+    createTransformerFactory(twoslash.runSync)({
       renderer: rendererRich(),
     }),
   ],

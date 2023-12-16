@@ -43,15 +43,18 @@ export interface TwoSlashCdnReturn {
    * Run auto type acquisition and then twoslash on the given code
    */
   run: (source: string, extension: string, localOptions?: TwoSlashOptions) => Promise<TwoSlashReturn>
+
   /**
    * Run twoslasher on the given code, without running ATA
    */
   runSync: (source: string, extension: string, localOptions?: TwoSlashOptions) => TwoSlashReturn
+
   /**
    * Runs Auto-Type-Acquisition (ATA) on the given code, the async operation before running twoslash
    * @param code
    */
   prepareTypes: (source: string) => Promise<void>
+
   /**
    * Load the default TypeScript types library from CDN
    * Automatically called by `run` and `prepareTypes`
@@ -62,6 +65,7 @@ export interface TwoSlashCdnReturn {
    * The fetch function used by the instance
    */
   fetcher: typeof fetch
+
   /**
    * Overrides options for twoslash
    */
