@@ -10,6 +10,8 @@ Run [TypeScript TwoSlash](https://www.typescriptlang.org/dev/twoslash/) on the b
 
 A thin wrapper around `@typescript/twoslash`, `@typescript/vfs`, `@typescript/ata` to an easy-to-use interface. Huge thanks to the TypeScript team for the heavy-lifting work on [TypeScript Website](https://github.com/microsoft/TypeScript-Website) project.
 
+[CDN Example](https://twoslash-cdn-examples.netlify.app/) | [Example Source File](./examples/index.html)
+
 ## Usage
 
 ```html

@@ -5,6 +5,11 @@ import lzstring from 'lz-string'
 import { createDefaultMapFromCDN } from '@typescript/vfs'
 import { setupTypeAcquisition } from '@typescript/ata'
 
+/**
+ * A subset of `unstorage`'s interface to maximize the compatibility
+ *
+ * @see https://github.com/unjs/unstorage
+ */
 export interface PesudoStorage {
   getItemRaw: (key: string) => string | Promise<string | null>
   setItemRaw: (key: string, value: string) => void | Promise<void>
@@ -18,20 +23,24 @@ export interface TwoSlashCdnOptions {
    * @see https://github.com/unjs/unstorage
    */
   storage?: PesudoStorage
+
   /**
    * TypeScript compiler options
    */
   compilerOptions?: ts.CompilerOptions
+
   /**
    * TwoSlash options Overrides
    *
    * Options `tsModule`, `lzstringModule` and `fsMap` are controlled by this function
    */
   twoSlashOptionsOverrides?: Omit<TwoSlashOptions, 'tsModule' | 'lzstringModule' | 'fsMap'>
+
   /**
    * A map of file paths to virtual file contents
    */
   fsMap?: Map<string, string>
+
   /**
    * Custom fetch function. When `unstorage` is provided, we will wrap the fetch function to cache the response.
    */
