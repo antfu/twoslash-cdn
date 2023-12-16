@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TwoSlash + Shikiji on CDN Example</title>
+    <link
+      rel="stylesheet"
+      href="https://esm.sh/shikiji-twoslash/style-rich.css"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      pre.twoslash {
+        --twoslash-popup-bg: #222;
+      }
+      #app {
+        padding: 2em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">Loading...</div>
+    <script type="module">
+      import {
+        createTransformer,
+        rendererRich,
+      } from 'https://esm.sh/shikiji-twoslash/core'
+      import { codeToHtml } from 'https://esm.sh/shikiji'
+      import { createStorage } from 'https://esm.sh/unstorage'
+      import indexedDbDriver from 'https://esm.sh/unstorage/drivers/indexedb'
+      import { createTwoSlashFromCDN } from 'https://esm.sh/twoslash-cdn@0.0.1'
+
+      const app = document.getElementById('app')
+
+      // An example using unstorage with IndexedDB to cache the virtual file system
+      const storage = createStorage({
+        driver: indexedDbDriver({ base: 'twoslash-cdn:' }),
+      })
+
+      const twoslash = createTwoSlashFromCDN({
+        unstorage: storage,
+        compilerOptions: {
+          lib: ['esnext', 'dom'],
+        },
+      })
+
+      console.log({ twoslash })
+
+      const source = `
+import { ref } from 'vue'
+
+console.log("Hi! Shiki + TwoSlash on CDN :)")
+
+const count = ref(0)
+//     ^?
+`.trim()
+
+      // Before rendering, we need to prepare the types, so that the rendering could happend synchronously
+      await twoslash.prepareTypes(source)
+
+      const transformerTwoSlash = createTransformer(twoslash.runSync)({
+        renderer: rendererRich(),
+      })
+
+      // Then we can render the code
+      app.innerHTML = await codeToHtml(source, {
+        lang: 'ts',
+        theme: 'vitesse-dark',
+        transformers: [transformerTwoSlash],
+      })
+    </script>
+  </body>
+</html>

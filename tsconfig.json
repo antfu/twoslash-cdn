@@ -4,6 +4,11 @@
     "lib": ["esnext", "DOM"],
     "module": "esnext",
     "moduleResolution": "node",
+    "paths": {
+      "twoslash-cdn": [
+        "./src/index.ts"
+      ]
+    },
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,

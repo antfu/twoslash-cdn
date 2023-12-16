@@ -10,7 +10,7 @@ const storage = createStorage({
 })
 
 const twoSlash = createTwoSlashFromCDN({
-  unstorage: storage,
+  storage,
   compilerOptions: {
     lib: ['esnext', 'dom'],
   },
@@ -33,7 +33,7 @@ app.innerHTML = await codeToHtml(source, {
   theme: 'vitesse-dark',
   transformers: [
     transformerTwoSlash({
-      twoslashOptions: twoSlash.twoSlashOptons,
+      twoslashOptions: twoSlash.twoSlashOptionsOverrides,
       renderer: rendererRich(),
     }),
   ],

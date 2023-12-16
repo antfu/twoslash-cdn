@@ -1,17 +1,23 @@
-import type { TwoSlashOptions } from '@typescript/twoslash'
+import type { TwoSlashOptions, TwoSlashReturn } from '@typescript/twoslash'
 import { twoslasher } from '@typescript/twoslash'
 import ts from 'typescript'
 import lzstring from 'lz-string'
 import { createDefaultMapFromCDN } from '@typescript/vfs'
 import { setupTypeAcquisition } from '@typescript/ata'
-import type { Storage } from 'unstorage'
+
+export interface PesudoStorage {
+  getItemRaw: (key: string) => string | Promise<string | null>
+  setItemRaw: (key: string, value: string) => void | Promise<void>
+}
 
 export interface TwoSlashCdnOptions {
   /**
-   * Unstorage instance to use for caching
+   * Storage for persistent caching
+   *
+   * Supports `unstorage`'s interface
    * @see https://github.com/unjs/unstorage
    */
-  unstorage?: Storage
+  storage?: PesudoStorage
   /**
    * TypeScript compiler options
    */
@@ -32,6 +38,36 @@ export interface TwoSlashCdnOptions {
   fetcher?: typeof fetch
 }
 
+export interface TwoSlashCdnReturn {
+  /**
+   * Run auto type acquisition and then twoslash on the given code
+   */
+  run: (source: string, extension: string, localOptions?: TwoSlashOptions) => Promise<TwoSlashReturn>
+  /**
+   * Run twoslasher on the given code, without running ATA
+   */
+  runSync: (source: string, extension: string, localOptions?: TwoSlashOptions) => TwoSlashReturn
+  /**
+   * Runs Auto-Type-Acquisition (ATA) on the given code, the async operation before running twoslash
+   * @param code
+   */
+  prepareTypes: (source: string) => Promise<void>
+  /**
+   * Load the default TypeScript types library from CDN
+   * Automatically called by `run` and `prepareTypes`
+   */
+  init: () => Promise<void>
+
+  /**
+   * The fetch function used by the instance
+   */
+  fetcher: typeof fetch
+  /**
+   * Overrides options for twoslash
+   */
+  twoSlashOptionsOverrides: TwoSlashOptions
+}
+
 const noopLocalStorage = <typeof localStorage>{
   getItem: () => null,
   setItem: () => { },
@@ -42,10 +78,10 @@ const noopLocalStorage = <typeof localStorage>{
   key: () => null,
 }
 
-export function createTwoSlashFromCDN(options: TwoSlashCdnOptions = {}) {
+export function createTwoSlashFromCDN(options: TwoSlashCdnOptions = {}): TwoSlashCdnReturn {
   const fetcher = (
-    options.unstorage
-      ? createCachedFetchFromUnstorage(options.unstorage, options.fetcher || fetch)
+    options.storage
+      ? createCachedFetchFromStorage(options.storage, options.fetcher || fetch)
       : options.fetcher || fetch
   )
   const fsMap = options.fsMap || new Map<string, string>()
@@ -87,41 +123,30 @@ export function createTwoSlashFromCDN(options: TwoSlashCdnOptions = {}) {
     },
   })
 
-  /**
-   * Runs Auto-Type-Acquisition (ATA) on the given code, the async operation before running twoslash
-   * @param code
-   */
   async function prepareTypes(code: string) {
-    await init()
-    // ATA actually returns a Promise<void> but it's not typed
-    await ata(code)
+    await Promise.all([
+      init(),
+      ata(code),
+    ])
   }
 
-  /**
-   * Overrides options for twoslash
-   */
-  const twoSlashOptons: TwoSlashOptions = {
+  const twoSlashOptionsOverrides: TwoSlashOptions = {
+    ...options.twoSlashOptionsOverrides,
     tsModule: ts,
     lzstringModule: lzstring,
     fsMap,
   }
 
-  /**
-   * Run auto type acquisition and then twoslash on the given code
-   */
-  async function run(source: string, extension: string, localOptions: TwoSlashOptions) {
+  async function run(source: string, extension: string, localOptions?: TwoSlashOptions) {
     await prepareTypes(source)
     return runSync(source, extension, localOptions)
   }
 
-  /**
-   * Run twoslasher on the given code, without running ATA
-   */
-  function runSync(source: string, extension: string, localOptions: TwoSlashOptions) {
-    twoslasher(source, extension, {
+  function runSync(source: string, extension: string, localOptions?: TwoSlashOptions) {
+    return twoslasher(source, extension, {
       defaultCompilerOptions: options.compilerOptions,
       ...localOptions,
-      ...twoSlashOptons,
+      ...twoSlashOptionsOverrides,
     })
   }
 
@@ -130,10 +155,8 @@ export function createTwoSlashFromCDN(options: TwoSlashCdnOptions = {}) {
     runSync,
     init,
     prepareTypes,
-
-    fsMap,
     fetcher,
-    twoSlashOptons,
+    twoSlashOptionsOverrides,
   }
 }
 
@@ -144,8 +167,8 @@ export function createTwoSlashFromCDN(options: TwoSlashCdnOptions = {}) {
  * @param storage
  * @param nativeFetch
  */
-export function createCachedFetchFromUnstorage(
-  storage: Storage,
+export function createCachedFetchFromStorage(
+  storage: PesudoStorage,
   nativeFetch: typeof fetch = fetch,
 ): typeof fetch {
   return (async (url: string, init?: RequestInit) => {
