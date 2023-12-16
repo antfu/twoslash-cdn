@@ -81,16 +81,6 @@ export interface TwoSlashCdnReturn {
   twoSlashOptionsOverrides: TwoSlashOptions
 }
 
-const noopLocalStorage = <typeof localStorage>{
-  getItem: () => null,
-  setItem: () => { },
-  hasItem: () => false,
-  clear: () => { },
-  removeItem: () => { },
-  length: 0,
-  key: () => null,
-}
-
 export function createTwoSlashFromCDN(options: TwoSlashCdnOptions = {}): TwoSlashCdnReturn {
   const fetcher = (
     options.storage
@@ -104,13 +94,10 @@ export function createTwoSlashFromCDN(options: TwoSlashCdnOptions = {}): TwoSlas
     const newMap = await createDefaultMapFromCDN(
       options.compilerOptions || {},
       ts.version,
-      true,
+      false,
       ts,
       lzstring,
       fetcher,
-      // We pass noopStorage to avoid using localStorage,
-      // cache should be handled by the fetcher
-      noopLocalStorage,
     )
 
     newMap.forEach((value, key) => {

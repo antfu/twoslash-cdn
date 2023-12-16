@@ -8,15 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@typescript/ata':
-        specifier: ^0.9.4
-        version: 0.9.4(typescript@5.3.3)
       '@typescript/twoslash':
         specifier: ^3.2.4
         version: 3.2.4(typescript@5.3.3)
-      '@typescript/vfs':
-        specifier: ^1.5.0
-        version: 1.5.0
       lz-string:
         specifier: ^1.5.0
         version: 1.5.0
@@ -36,6 +30,12 @@ importers:
       '@types/node':
         specifier: ^20.10.4
         version: 20.10.4
+      '@typescript/ata':
+        specifier: ^0.9.4
+        version: 0.9.4(typescript@5.3.3)
+      '@typescript/vfs':
+        specifier: ^1.5.0
+        version: 1.5.0
       bumpp:
         specifier: ^9.2.1
         version: 9.2.1
@@ -1645,7 +1645,7 @@ packages:
       typescript: ^4.4.4
     dependencies:
       typescript: 5.3.3
-    dev: false
+    dev: true
 
   /@typescript/twoslash@3.2.4(typescript@5.3.3):
     resolution: {integrity: sha512-/TCIOuPQaKltzUUT1qJo6mplYwjbAxkaSFvkeZD3FeFt3Ovt+HJi8xisu8rcLyDRmM3VJ0+jAx+AAICwn4Zlhw==}
@@ -1667,7 +1667,6 @@ packages:
       debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
-    dev: false
 
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
