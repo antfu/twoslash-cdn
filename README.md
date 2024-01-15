@@ -1,3 +1,7 @@
+Moved to https://github.com/twoslashes/twoslash/tree/main/packages/twoslash-cdn
+
+----
+
 # twoslash-cdn
 
 [![npm version][npm-version-src]][npm-version-href]
